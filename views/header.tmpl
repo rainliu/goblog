@@ -1,0 +1,52 @@
+{{define "header"}}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head profile="http://gmpg.org/xfn/11">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>{{.Name}}</title>
+	<link rel="stylesheet" type="text/css" media="all" href="/static/style.css"/>
+	<link rel="shortcut icon" type="image/ico" href="/static/ico.gif">
+</head>
+
+<body id="main">
+	<div class="h">
+		<div class="header">
+			<div class="nav">
+				<ul class="nav-ul nova-l">
+					<li class="page_item"><a href="/"         	    	title="Home">Home</a></li>
+					<!--li class="page_item"><a href="/category/news"   	title="News">News</a></li>
+					<li class="page_item"><a href="/category/research" 	title="Research">Research</a></li-->
+					<li class="page_item"><a href="/archives"  	 	    title="Archives">Archives</a></li>
+					<li class="page_item"><a href="/comments"       	title="Comments">Comments</a></li>
+					<!--li class="page_item"><a href="/help" 	 			title="Help">Help</a></li-->
+					<li class="page_item"><a href="/about" 	 		    title="About">About</a></li>
+				</ul>
+
+				<div class="search nova-r">
+					<form method="get" class="searchform" name="searchform" action="{{.Url}}/search">
+					<input type="text" class="search-input nova-l" size="24" value="Search {{.Name}}" name="s" onfocus="if (this.value == 'Search {{.Name}}') {this.value = '';}" onblur="if (this.value == '') {this.value = 'Search {{.Name}}';}" />
+					<input type="submit" class="search-submit nova-r" value="" />
+					</form>
+				</div>
+			</div>
+
+			<div class="nova-l">
+				<div id="livesino-logo"><font size="5" face="Arial Black" color="#2B547E"><strong>{{.Name}}</strong></font></div>
+				<div id="description"><font size="3">{{.Description}}</font></div>
+			</div>
+
+			<div class="header-widget nova-r">
+				<table border="0" cellpadding="0" cellspacing="0" width="100%">
+					<tr>
+						<td align="left"><span class="signup-control"><a href="https://domains.live.com/members/signup.aspx?domain={{.Name}}; ?>" target="_blank" title="Sign up {{.Name}} mail service">Sign up</a></span></td>
+
+						<td align="center"><span class="mail-control"><a href="http://mail.live.com" target="_blank" title="Check {{.Name}} e-mail">Check mail</a></span></td>
+						
+						<td align="right"><span class="live-translator"><a target="_blank" href="http://www.windowslivetranslator.com/BV.aspx?ref=AddIn&amp;lp=en_zh-CHS&amp;a={{.Url}}" title="Powered by Windows Live Translator">Translate it</a></span></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+{{end}}

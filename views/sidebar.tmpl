@@ -1,0 +1,76 @@
+{{define "sidebar"}}
+
+<div class="sidebar">
+	<ul class="sidebar-ul">
+		<li class="sidebar-li">
+			{{with .RSSConfig}}
+				<div class="sidebar-rssfeed"><a href="{{.RssUrl}}">Subscribe {{.Name}} (RSS)</a></div>
+				<ul class="widget_rss">
+					<li><a href="http://my.live.com/?add={{.RssUrl}}" target="_blank" rel="nofollow" style="color:#54BF4C;">Windows Live</a></li>
+				</ul>
+				<ul class="widget_rss">
+					<li><a href="http://fusion.google.com/add?feedurl={{.RssUrl}}" target="_blank" rel="nofollow" style="color:#2578CD;">Google Reader</a></li>
+				</ul>
+				<ul class="widget_rss">
+					<li><a href="http://add.my.yahoo.com/rss?url={{.RssUrl}}" target="_blank" rel="nofollow" style="color:#D32930;">My Yahoo!</a></li>
+				</ul>
+			{{end}}
+		</li>
+
+		<li class="sidebar-li">
+			<h2 class="sidebar-title">User Panel</h2>
+			<ul class="widget_meta">
+				<li><a href="{{.LoginoutURL}}">{{if .User}}Logout{{else}}Login{{end}}</a></li>
+				<li><a href="/legal"      title="Legal Notices" >Legal Notices</a></li>
+				<li><a href="/privacy"    title="Privacy Policy">Privacy Policy</a></li>     
+			</ul>
+		</li>
+
+		<li class="sidebar-li">
+			<h2 class="sidebar-title">Recent Comments</h2>
+			<ul class="widget_comments">
+				{{range .RecentComments}}
+					<li><a href="/view/?id={{.ArticleID}}" rel="bookmark" title="Permanent Link to this article">{{.Name}}: {{.Content | CommentContent2Excerpt}}</li>
+				{{end}}
+			</ul>
+		</li>
+
+		<li class="sidebar-li">
+			<h2 class="sidebar-title">Recent Posts</h2>
+				<ul class="widget_posts">
+				{{range .RecentPosts}}
+					<li><a href="/view/?id={{.ArticleID}}" rel="bookmark" title="Permanent Link to this article">{{.Title}}</a></li>
+				{{end}}
+			</ul>
+		</li>
+
+		<li class="sidebar-li">
+			<h2 class="sidebar-title">Popular Posts</h2>
+			<ul class="widget_posts">
+				{{range .PopularPosts}}
+					<li><a href="/view/?id={{.ArticleID}}" rel="bookmark" title="Permanent Link to this article">{{.Title}}</a></li>
+				{{end}}
+			</ul>
+		</li>
+
+		<li class="sidebar-li">
+			<h2 class="sidebar-title">Archives</h2>
+			<ul class="widget_archives">
+				{{range .Archives}}
+					<li>{{.}}</li>
+				{{end}}
+			</ul>
+		</li>
+
+		<li class="sidebar-li">
+			<h2 class="sidebar-title">Links</h2>
+			<ul class="widget_links">
+				{{range .Links}}
+					<li>{{.}}</li>
+				{{end}}
+			</ul>
+		</li>
+	</ul>
+</div>
+
+{{end}}

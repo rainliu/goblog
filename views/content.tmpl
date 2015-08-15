@@ -1,0 +1,107 @@
+{{define "content"}}
+
+<div class="content">
+	{{if .IsAdmin}}
+		{{range .Articles}}
+		<div class="post clearfix" id="post-id">
+			<div class="post-title">
+				<h2><a href="/view/?id={{.ArticleID}}" rel="bookmark" title="Permanent Link to this article">{{.Title}}</a></h2>
+				<span class="post-calendar">{{.Date | Date2String}}</span>
+				<span class="post-author">{{.DisplayName}}</span>
+				<span class="post-cat">{{.Category}}</span>
+				<span class="post-tags">{{.Tags | Tags2String}}</span>
+				<span class="post-comments nova-r">{{.Comments}} Comments</span>
+				<span class="post-views">{{.Views}} Views</span>
+				<span class="post-edit"><a href="/edit/?id={{.ArticleID}}" title="Edit {{.Title}}">Edit</a></span>
+				<span class="post-del"><a href="/delete/?id={{.ArticleID}}" title="Delete {{.Title}}">Delete</a></span>
+			</div>
+			<div class="entry clearfix">
+				<p>{{.Content | FullText2Excerpt}}</p>
+				<p>Permanent Link: <a href="/view/?id={{.ArticleID}}" rel="bookmark" title="Permanent Link to {{.Title}}">{{.Title}}</a></p>
+			</div>
+		</div>
+		{{end}}
+	{{else}}
+		{{range .Articles}}
+		<div class="post clearfix" id="post-id">
+			<div class="post-title">
+				<h2><a href="/view/?id={{.ArticleID}}" rel="bookmark" title="Permanent Link to this article">{{.Title}}</a></h2>
+				<span class="post-calendar">{{.Date | Date2String}}</span>
+				<span class="post-author">{{.DisplayName}}</span>
+				<span class="post-cat">{{.Category}}</span>
+				<span class="post-tags">{{.Tags | Tags2String}}</span>
+				<span class="post-comments nova-r">{{.Comments}} Comments</span>
+				<span class="post-views">{{.Views}} Views</span>
+			</div>
+			<div class="entry clearfix">
+				<p>{{.Content | FullText2Excerpt}}</p>
+				<p>Permanent Link: <a href="/view/?id={{.ArticleID}}" rel="bookmark" title="Permanent Link to {{.Title}}">{{.Title}}</a></p>
+			</div>
+		</div>
+		{{end}}
+	{{end}}
+	
+	{{if .IsSingle}}
+	  	<div id="comments">
+	  		<h3 class="comments-title">
+	  			{{if .Comments}}
+	  				Comments:
+	  			{{else}}
+			    	No Comments!</h3>
+		      	{{end}}
+	  		</h3>
+	  		
+		    <div class="comment-list">
+		      	{{range .Comments}}
+			        <div class="hslice" id="comment-{{.CommentID}}">
+			          <div class="entry-content comment nova">
+			          	<div class="gravatar nova-l">
+			          		<img src="/static/none.jpg" width="40" />
+	        			</div>
+			            <div class="comment-content">
+			              <a href="mailto:{{.Email}}">{{.Name}}</a><br>
+			              <small class="commentmetadata">{{.Date}}</small><br>
+			              <p>{{.Content}}</p>
+			            </div>
+			          </div>
+			        </div>
+		      	{{end}}
+		    </div>
+		    <h3 class="comments-title" id="respond">Post Comment</h3>
+    		<form action="/comment" method="post" id="commentform">
+    			<p>
+    				<input type="text" name="Name" class="comments-input" id="Name" value="" size="29" tabindex="1" />
+  					<label for="Name"><small>Name (Required)</small></label>
+  				</p>
+  				<p>
+  					<input type="text" name="Email" class="comments-input" id="Email" value="" size="29" tabindex="2" />
+				  	<label for="Email"><small>Email (Required)</small></label>
+				</p>
+				<p>
+					<input type="text" name="Website" class="comments-input" id="Website" value="" size="29" tabindex="3" />
+				  	<label for="Website"><small>Website (Optional)</small></label>
+				</p>
+			    <p>
+			    	<textarea name="Content" id="comment-textarea" class="form-textarea" cols="100%" rows="5" tabindex="4" style="resize: vertical"></textarea>
+			    </p>
+	  			<p>
+	  				{{range .Articles}}
+	  				<input type="hidden" name="ArticleID" value="{{.ArticleID}}" />
+	  				{{end}}
+	  				<input name="submit" type="submit" class="form-submit" tabindex="5" value="Post Comment" />
+	  			</p>
+	    	</form>
+	    </div>
+    {{end}}
+
+	<div class="navigation">
+		{{if .PrevEntries}}
+			<div class="previous-entries nova-l"><a href="{{.PrevEntries}}" title="Previous Entries">Previous Entries</a></div> 
+		{{end}}
+		{{if .NextEntries}}
+			<div class="next-entries nova-r"><a href="{{.NextEntries}}" title="Next Entries">Next Entries</a></div>
+		{{end}}
+	</div>
+</div>
+
+{{end}}
