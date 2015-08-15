@@ -103,5 +103,5 @@ func HandlerView(w http.ResponseWriter, r *http.Request) {
 		Comments: myComments,
 	}
 
-	RenderContent(w, r, myContent)
+	RenderContent(w, r, myContent, "content")
 }

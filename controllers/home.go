@@ -63,5 +63,5 @@ func HandlerHome(w http.ResponseWriter, r *http.Request) {
 		Comments: nil,
 	}
 
-	RenderContent(w, r, myContent)
+	RenderContent(w, r, myContent, "content")
 }

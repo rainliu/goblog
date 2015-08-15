@@ -1,16 +1,32 @@
-<html>
-    <head>
-        <title></title>
-    </head>
-    <body>
-        <h1>New Blog Post</h1>
-        <form action="/new" method="post">
-            Title		:<input type="text" name="Title"><br>
-            Catergory	:<input type="text" name="Category"><br>
-            Tags		:<input type="text" name="Tags"><br>
-            Content		:<textarea name="Content" colspan="100" rowspan="100"></textarea><br>
-            <input type="submit">
-            <!--input type="hidden" name="new_post_ID" value="877" /-->
-        </form>
-    </body>
-</html>
+{{define "new"}}
+
+<div class="content">
+    {{if .IsAdmin}}
+        <div class="post clearfix" id="post-id">
+            <form action="/new" method="post">
+                <p>
+                    <label for="Title">Title:</label>
+                    <input type="text" name="Title" value="" class="comments-input" id="Title" size="100" tabindex="1" />
+                </p>
+                <p>
+                    <label for="Catergory">Catergory:</label>
+                    <input type="text" name="Category" value="" class="comments-input" id="Catergory" size="100" tabindex="2" />
+                </p>
+                <p>
+                    <label for="Tags">Tags:</label>
+                    <input type="text" name="Tags" value="" class="comments-input" id="Tags" size="100" tabindex="3" />
+                </p>
+                <p>
+                    <label for="Content">Content:</label>
+                    <textarea name="Content" id="comment-textarea" class="form-textarea" cols="100%" rows="100%" tabindex="4" style="resize: vertical"></textarea>
+                </p>
+                <p>
+                    <!--input type="hidden" name="new_post_ID" value="877" /-->
+                    <input name="submit" type="submit" class="form-submit" tabindex="5" value="Submit" />
+                </p>
+            </form>
+        </div>
+    {{end}}
+</div>
+
+{{end}}

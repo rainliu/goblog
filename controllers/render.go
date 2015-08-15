@@ -10,7 +10,7 @@ import (
 	"appengine/user"
 )
 
-func RenderContent(w http.ResponseWriter, r *http.Request, myContent models.Content) {
+func RenderContent(w http.ResponseWriter, r *http.Request, myContent models.Content, tmplName string) {
 	var url string
 	var err error
 
@@ -65,10 +65,10 @@ func RenderContent(w http.ResponseWriter, r *http.Request, myContent models.Cont
 		"FullText2Excerpt":       models.FullTextSelect(r.Form["id"] != nil), //models.FullText2Excerpt,
 	})
 
-	t, err = t.ParseFiles("views/header.tmpl", "views/content.tmpl", "views/sidebar.tmpl", "views/footer.tmpl")
+	t, err = t.ParseFiles("views/header.tmpl", "views/"+tmplName+".tmpl", "views/sidebar.tmpl", "views/footer.tmpl")
 
 	err = t.ExecuteTemplate(w, "header", models.MyBlogConfig)
-	err = t.ExecuteTemplate(w, "content", myContent)
+	err = t.ExecuteTemplate(w, tmplName, myContent)
 	err = t.ExecuteTemplate(w, "sidebar", mySideBar)
 	err = t.ExecuteTemplate(w, "footer", models.MyBlogConfig)
 

@@ -28,8 +28,16 @@ func HandlerNew(w http.ResponseWriter, r *http.Request) {
 
 	if user.IsAdmin(c) {
 		if r.Method == "GET" {
-			t, _ := template.ParseFiles("views/new.tmpl")
-			t.Execute(w, nil)
+			myContent := models.Content{
+				IsAdmin:     true,
+				Articles:    nil,
+				PrevEntries: "",
+				NextEntries: "",
+				IsSingle:    false,
+				Comments:    nil,
+			}
+
+			RenderContent(w, r, myContent, "new")
 		} else {
 			if r.FormValue("Title") != "" {
 				ArticleID := 0

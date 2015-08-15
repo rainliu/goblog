@@ -44,14 +44,16 @@ func HandlerEdit(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if r.Method == "GET" {
-				t := template.New("edit")
-				t = t.Funcs(template.FuncMap{"Tags2String": models.Tags2String})
-				t, err = t.ParseFiles("views/edit.tmpl")
-				err = t.ExecuteTemplate(w, "edit.tmpl", myArticles[0])
-				if err != nil {
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
+				myContent := models.Content{
+					IsAdmin:     true,
+					Articles:    myArticles,
+					PrevEntries: "",
+					NextEntries: "",
+					IsSingle:    false,
+					Comments:    nil,
 				}
+
+				RenderContent(w, r, myContent, "edit")
 			} else {
 				ArticleId, _ := strconv.ParseInt(r.FormValue("ArticleID"), 10, 32)
 				ArticleID := int(ArticleId)
