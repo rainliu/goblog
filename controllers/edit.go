@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"appengine"
-	"appengine/datastore"
 	"appengine/user"
 )
 
@@ -27,24 +26,19 @@ func HandlerEdit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if user.IsAdmin(c) {
-		var err error
-		var key []*datastore.Key
-		var myArticles []models.Article
 		r.ParseForm()
 		if r.Form["id"] != nil {
 			ArticleId, _ := strconv.ParseInt(r.Form["id"][0], 10, 32)
 			ArticleID := int(ArticleId)
 
-			a := datastore.NewQuery("Article").Filter("ArticleID =", ArticleID)
-			myArticles = make([]models.Article, 0, 1)
-
-			if key, err = a.GetAll(c, &myArticles); err != nil {
+			myArticles, keys, err := models.FindArticle(c, ArticleID)
+			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
 			if r.Method == "GET" {
-				myContent := models.Content{
+				myContent := &models.Content{
 					IsAdmin:     true,
 					Articles:    myArticles,
 					PrevEntries: "",
@@ -62,7 +56,7 @@ func HandlerEdit(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 
-				a := models.Article{
+				a := &models.Article{
 					ArticleID:   ArticleID,
 					Title:       strings.TrimSpace(r.FormValue("Title")),
 					Date:        myArticles[0].Date,
@@ -74,8 +68,8 @@ func HandlerEdit(w http.ResponseWriter, r *http.Request) {
 					Views:       myArticles[0].Views,
 					Comments:    myArticles[0].Comments,
 				}
-				_, err := datastore.Put(c, key[0], &a)
-				if err != nil {
+
+				if err = models.SaveArticle(c, keys[0], a); err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}

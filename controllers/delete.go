@@ -1,11 +1,11 @@
 package controllers
 
 import (
+	"models"
 	"net/http"
 	"strconv"
 
 	"appengine"
-	"appengine/datastore"
 	"appengine/user"
 )
 
@@ -29,16 +29,9 @@ func HandlerDelete(w http.ResponseWriter, r *http.Request) {
 			ArticleId, _ := strconv.ParseInt(r.Form["id"][0], 10, 32)
 			ArticleID := int(ArticleId)
 
-			a := datastore.NewQuery("Article").Filter("ArticleID =", ArticleID).KeysOnly()
-
-			if k, err := a.GetAll(c, nil); err != nil {
+			if err := models.DeleteArticle(c, ArticleID); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
-			} else {
-				if err = datastore.Delete(c, k[0]); err != nil {
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
 			}
 		}
 	}

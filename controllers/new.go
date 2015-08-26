@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"appengine"
-	"appengine/datastore"
 	"appengine/user"
 )
 
@@ -28,7 +27,7 @@ func HandlerNew(w http.ResponseWriter, r *http.Request) {
 
 	if user.IsAdmin(c) {
 		if r.Method == "GET" {
-			myContent := models.Content{
+			myContent := &models.Content{
 				IsAdmin:     true,
 				Articles:    nil,
 				PrevEntries: "",
@@ -40,21 +39,13 @@ func HandlerNew(w http.ResponseWriter, r *http.Request) {
 			RenderContent(w, r, myContent, "new")
 		} else {
 			if r.FormValue("Title") != "" {
-				ArticleID := 0
-				last := datastore.NewQuery("Article")
-				if count, err := last.Count(c); count == 0 || err != nil {
-					ArticleID = 0
-				} else {
-					last = last.Ancestor(newblogKey(c)).Order("-Date").Limit(1)
-					lastArticle := make([]models.Article, 0, 1)
-					if _, err := last.GetAll(c, &lastArticle); err != nil {
-						http.Error(w, err.Error(), http.StatusInternalServerError)
-						return
-					}
-					ArticleID = lastArticle[0].ArticleID + 1
+				ArticleID, err := models.FindLatestArticleID(c)
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
 				}
 
-				a := models.Article{
+				a := &models.Article{
 					ArticleID:   ArticleID,
 					Title:       strings.TrimSpace(r.FormValue("Title")),
 					Date:        time.Now(),
@@ -67,13 +58,7 @@ func HandlerNew(w http.ResponseWriter, r *http.Request) {
 					Comments:    0,
 				}
 
-				// We set the same parent key on every Greeting entity to ensure each Greeting
-				// is in the same entity group. Queries across the single entity group
-				// will be consistent. However, the write rate to a single entity group
-				// should be limited to ~1/second.
-				key := datastore.NewIncompleteKey(c, "Article", newblogKey(c))
-				_, err := datastore.Put(c, key, &a)
-				if err != nil {
+				if err = models.SaveArticle(c, nil, a); err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
@@ -83,10 +68,4 @@ func HandlerNew(w http.ResponseWriter, r *http.Request) {
 	} else {
 		http.Redirect(w, r, "/", http.StatusFound)
 	}
-}
-
-// newblogKey returns the key used for all blog entries.
-func newblogKey(c appengine.Context) *datastore.Key {
-	// The string "default_blog" here could be varied to have multiple guestbooks.
-	return datastore.NewKey(c, "Article", "default_article", 0, nil)
 }
