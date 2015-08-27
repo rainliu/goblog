@@ -1,6 +1,7 @@
 package models
 
 import (
+	"net/http"
 	"time"
 
 	"appengine"
@@ -17,7 +18,9 @@ type Comment struct {
 	Content   string
 }
 
-func FindLatestCommentID(c appengine.Context) (int, error) {
+func FindLatestCommentID(r *http.Request) (int, error) {
+	c := appengine.NewContext(r)
+
 	CommentID := 0
 	last := datastore.NewQuery("Comment")
 	if count, err := last.Count(c); count == 0 || err != nil {
@@ -34,10 +37,26 @@ func FindLatestCommentID(c appengine.Context) (int, error) {
 	return CommentID, nil
 }
 
-func SaveComment(c appengine.Context, key *datastore.Key, comment *Comment) error {
-	if key == nil {
-		key = datastore.NewIncompleteKey(c, "Comment", nil)
+func DeleteComment(r *http.Request, ArticleID int) error {
+	c := appengine.NewContext(r)
+
+	a := datastore.NewQuery("Comment").Filter("ArticleID =", ArticleID).KeysOnly()
+
+	if k, err := a.GetAll(c, nil); err != nil {
+		return err
+	} else {
+		if err = datastore.Delete(c, k[0]); err != nil {
+			return err
+		}
 	}
+	return nil
+}
+
+func SaveComment(r *http.Request, comment *Comment) error {
+	c := appengine.NewContext(r)
+
+	key := datastore.NewIncompleteKey(c, "Comment", nil)
+
 	_, err := datastore.Put(c, key, comment)
 	if err != nil {
 		return err

@@ -6,13 +6,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"appengine"
 )
 
 func HandlerComment(w http.ResponseWriter, r *http.Request) {
-	c := appengine.NewContext(r)
-
 	if r.Method == "GET" {
 		http.Redirect(w, r, "/", http.StatusFound)
 	} else {
@@ -20,13 +16,13 @@ func HandlerComment(w http.ResponseWriter, r *http.Request) {
 			ArticleId, _ := strconv.ParseInt(r.FormValue("ArticleID"), 10, 32)
 			ArticleID := int(ArticleId)
 
-			err := models.UpdateArticleComments(c, ArticleID)
+			err := models.UpdateArticleComments(r, ArticleID)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
-			CommentID, err := models.FindLatestCommentID(c)
+			CommentID, err := models.FindLatestCommentID(r)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -42,7 +38,7 @@ func HandlerComment(w http.ResponseWriter, r *http.Request) {
 				Content:   r.FormValue("Content"),
 			}
 
-			err = models.SaveComment(c, nil, comment)
+			err = models.SaveComment(r, comment)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return

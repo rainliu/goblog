@@ -2,11 +2,11 @@ package models
 
 import (
 	"html/template"
+	"net/http"
 	"time"
 
 	"appengine"
 	"appengine/datastore"
-	"appengine/user"
 )
 
 type Article struct {
@@ -14,7 +14,6 @@ type Article struct {
 	Title       string
 	Date        time.Time
 	DisplayName string
-	Author      user.User
 	Category    string
 	Tags        []string
 	Content     template.HTML `datastore:"Content,noindex"`
@@ -22,7 +21,9 @@ type Article struct {
 	Comments    int
 }
 
-func FindLatestArticleID(c appengine.Context) (int, error) {
+func FindLatestArticleID(r *http.Request) (int, error) {
+	c := appengine.NewContext(r)
+
 	ArticleID := 0
 	last := datastore.NewQuery("Article")
 	if count, err := last.Count(c); count == 0 || err != nil {
@@ -38,7 +39,9 @@ func FindLatestArticleID(c appengine.Context) (int, error) {
 	return ArticleID, nil
 }
 
-func FindArticle(c appengine.Context, ArticleID int) ([]Article, []*datastore.Key, error) {
+func FindArticle(r *http.Request, ArticleID int) ([]Article, []*datastore.Key, error) {
+	c := appengine.NewContext(r)
+
 	a := datastore.NewQuery("Article").Filter("ArticleID =", ArticleID)
 	myArticles := make([]Article, 0, 1)
 
@@ -49,7 +52,9 @@ func FindArticle(c appengine.Context, ArticleID int) ([]Article, []*datastore.Ke
 	}
 }
 
-func SaveArticle(c appengine.Context, key *datastore.Key, a *Article) error {
+func SaveArticle(r *http.Request, key *datastore.Key, a *Article) error {
+	c := appengine.NewContext(r)
+
 	if key == nil {
 		key = datastore.NewIncompleteKey(c, "Article", nil)
 	}
@@ -57,7 +62,9 @@ func SaveArticle(c appengine.Context, key *datastore.Key, a *Article) error {
 	return err
 }
 
-func DeleteArticle(c appengine.Context, ArticleID int) error {
+func DeleteArticle(r *http.Request, ArticleID int) error {
+	c := appengine.NewContext(r)
+
 	a := datastore.NewQuery("Article").Filter("ArticleID =", ArticleID).KeysOnly()
 
 	if k, err := a.GetAll(c, nil); err != nil {
@@ -70,7 +77,9 @@ func DeleteArticle(c appengine.Context, ArticleID int) error {
 	return nil
 }
 
-func UpdateArticleComments(c appengine.Context, ArticleID int) error {
+func UpdateArticleComments(r *http.Request, ArticleID int) error {
+	c := appengine.NewContext(r)
+
 	a := datastore.NewQuery("Article").Filter("ArticleID =", ArticleID)
 	myArticles := make([]Article, 0, 1)
 

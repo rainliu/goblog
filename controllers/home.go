@@ -5,22 +5,9 @@ import (
 	"strconv"
 
 	"models"
-
-	"appengine"
-	"appengine/user"
 )
 
 func HandlerHome(w http.ResponseWriter, r *http.Request) {
-	var isAdmin bool
-
-	c := appengine.NewContext(r)
-	u := user.Current(c)
-	if u == nil {
-		isAdmin = false
-	} else {
-		isAdmin = user.IsAdmin(c)
-	}
-
 	PageID := int(0)
 
 	if r.Form["page"] != nil {
@@ -28,7 +15,7 @@ func HandlerHome(w http.ResponseWriter, r *http.Request) {
 		PageID = int(PageId)
 	}
 
-	myContent, err := models.GetContents(c, isAdmin, PageID)
+	myContent, err := models.GetContents(r, PageID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

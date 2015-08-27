@@ -8,43 +8,19 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"appengine"
-	"appengine/user"
 )
 
 func RenderContent(w http.ResponseWriter, r *http.Request, myContent *models.Content, tmplName string) {
-	var url string
-
-	c := appengine.NewContext(r)
-	u := user.Current(c)
-	if u == nil {
-		url, _ = user.LoginURL(c, r.URL.String())
-	} else {
-		url, _ = user.LogoutURL(c, r.URL.String())
-	}
-
-	RecentComments, RecentPosts, PopularPosts, err := models.GetSideBarInfo(c)
+	mySideBar, err := models.GetSideBar(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	mySideBar := models.SideBar{
-		User:           u,
-		LoginoutURL:    url,
-		RSSConfig:      models.MyBlogConfig,
-		RecentComments: RecentComments,
-		RecentPosts:    RecentPosts,
-		PopularPosts:   PopularPosts,
-		Archives:       []string{"December 2012 (1)", "December 2011 (2)"},
-		Links:          []string{"Check out HM (HEVC reference software)", "Download JCT-VC documents"}}
-
 	w.Header().Set("Content-Type", "text/html")
 
 	t := template.New("home")
 	t = t.Funcs(template.FuncMap{"Date2String": Date2String,
-		"Author2String":          Author2String,
 		"Tags2String":            Tags2String,
 		"Comments2String":        Comments2String,
 		"CommentContent2Excerpt": CommentContent2Excerpt,
@@ -58,9 +34,9 @@ func RenderContent(w http.ResponseWriter, r *http.Request, myContent *models.Con
 	err = t.ExecuteTemplate(w, "sidebar", mySideBar)
 	err = t.ExecuteTemplate(w, "footer", models.MyBlogConfig)
 
-	//err = t.Execute(w, nil)
 	if err != nil {
-		c.Errorf("%v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -68,10 +44,6 @@ func Date2String(date time.Time) string {
 	str := date.Local().String()
 
 	return str[0:10]
-}
-
-func Author2String(author user.User) string {
-	return author.String()
 }
 
 func Tags2String(tags []string) string {

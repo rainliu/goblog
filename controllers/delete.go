@@ -4,32 +4,33 @@ import (
 	"models"
 	"net/http"
 	"strconv"
-
-	"appengine"
-	"appengine/user"
 )
 
 func HandlerDelete(w http.ResponseWriter, r *http.Request) {
-	c := appengine.NewContext(r)
-	u := user.Current(c)
-	if u == nil {
-		url, err := user.LoginURL(c, r.URL.String())
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+	isAdmin, _, url, err := models.Login(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if url != "" {
 		w.Header().Set("Location", url)
 		w.WriteHeader(http.StatusFound)
 		return
 	}
 
-	if user.IsAdmin(c) {
+	if isAdmin {
 		r.ParseForm()
 		if r.Form["id"] != nil {
 			ArticleId, _ := strconv.ParseInt(r.Form["id"][0], 10, 32)
 			ArticleID := int(ArticleId)
 
-			if err := models.DeleteArticle(c, ArticleID); err != nil {
+			if err := models.DeleteComment(r, ArticleID); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if err := models.DeleteArticle(r, ArticleID); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
